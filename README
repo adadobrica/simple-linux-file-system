@@ -1,0 +1,128 @@
+Name: Dobrica Nicoleta Adriana & Mirza Ana-Maria
+Group: 311CA
+
+Homework 3 - Simple Linux File System
+
+### Description:
+#Data Structures:
+1. FileTree - contains the root of the file tree, the root, which is a TreeNode
+	      struct pointer;
+2. TreeNode - stores a pointer to the parent TreeNode, a string containing the
+	      name of the node, the type (file/folder), and a generic void
+	      pointer for the content;
+3. FileContent - contains a string of characters representing content of a file
+4. Foldercontent - contains list of the "children" or content of a folder; the
+		   the children can be either files ro folders;
+5. List - stores the head of the list of nodes of a list of children
+6. ListNode - a node in a list of folder content; contains a TreeNode pointer
+	      and a pointer to the next node;
+
+
+#Implementation
+The simple linux file system is simulated by a number of commands read from
+stdin, and processed in the main file. Every function called by a command
+deals with the respective errors and requested task. The initial tree is
+composed of a single folder, named root. As files and other folders are added,
+the tree becomes more complex.
+
+
+#Algorithm
+The main function reads commands and calls the associated function in order to
+perfrom the task wanted. Commands are read until 'exit' is given. After that,
+the memory is freed and the program exits. The operations implemented for
+this file system are the following:
+
+1. 'ls'
+This command prints the content of the folder given as argument, or content of
+a file; if no argument is given the function prints content of current folder.
+
+2. 'pwd'
+In order to print the path to the current directory, we go backwards to the
+root and store the path in an array. At the end we print the array backwards.
+
+3. 'cd'
+This function is used mainly to change the current directory by following the
+path given as argument. If the path is valid, it return a valid pointer of the
+new current folder. I also added a new parameter, 'cont', which allows for the
+function to be used by other functions that need to reach a folder/file given
+by a path. When the parameter is 1, the function is called by the main function
+and the proper error messages can be printed. Otherwise, the error messages are
+not printed, since they differ from case to case.
+
+4. 'recursiveTree'
+This is a helper function that prints the contet of a folder recursively and
+keeps track of the number of files and folders visitated, along with the level
+of depth.
+
+5. 'tree'
+To print the file system, we start from the current folder (or the one given as
+argument) and print the content using the helper function recursiveTree. At the
+end, it prints the total number of files/folders visited. 
+
+6. 'mkdir'
+This function creates a new folder in the current one, having the name given as
+argument. If folder is already existent, the command will have no effect.
+
+7. 'rm'
+This command removes an existing file by deleting it from the current list of
+folder.
+
+8. 'rmdir'
+Similarly, this command deletes an existing folder from the current one. If the
+folder we want to delete has content in it, the function cannot delete it.
+
+9. 'rmrec'
+This function allows for the recursive erasing of a folder/file, regardless of
+its content.
+
+10. 'touch'
+This command creates a new file, if there is no other file/folder with the given
+name. Otherwise, the command will have no effect. 
+
+11. 'removeNode'
+This function is a helper function that identifies folders/files from a given
+path and also keeps track of the previous nodes, so that the node can be
+deleted. If the desired node to be deleted is a file, the pointers are set to
+eliminate that node from the list of children, and the memory is freed. If the
+node to be deleted is a folder, the pointers are set so as to eliminte it from
+the list of children, and added to at the beginning of the destination folder
+list.
+
+12. 'cp'
+To copy a file from a given path to another, we use the cd function to get the
+node. Afterwards, if the destination is a folder, the file is copied as a whole, 
+or if the destionation is a file, only the content.
+
+13. 'mv'
+This command allows for valid files and folders to be moved from their parent
+folder to another. The removeNode function is used to reset pointers,  delete
+node from initial location, and relocate it to the destination.
+
+14. 'createFileTree'
+This function creates a file tree by creating an initial folder that is
+initialized as root.
+
+15. 'freeTree'
+This command frees the memory occupied by the tree, using the recursive function
+freeFoldeNode.
+
+16. 'add_new_node'
+This is an auxiliary function that places a node at the beginning of the list of
+children of a folder. It is used when new files or folders are created.
+
+17. 'freeFileNode'
+To free a file node, we use this function that frees the memory occupied by all
+inidividual structs.
+
+18. 'freeFolderNode'
+This function frees a folder recursivelly, making sure all the memory is
+deallocated and no files or folders are left unfreed inside.
+
+###Commentaries
+I really enjoyed the fact that this homework puts notions and theory into
+practical use. Also, the team work idea was extremely helpful and inspired, as
+it allows us to learn how to collaborate and also make the homework more
+manageable, considering the huge amoung of work we have.
+Some unpleasant thinks about this homewowrk were the memory leaks we found in
+the main function, and the fact that the program did not have implemented an
+exit.

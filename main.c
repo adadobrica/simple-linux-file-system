@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "tree.h"
 #define LINE_MAX_LEN 1000
 #define TOKEN_MAX_LEN 300
@@ -20,7 +21,8 @@ void execute_command(char *cmd, char *arg1, char *arg2) {
     printf("$ %s %s %s\n", cmd, arg1, arg2);
 }
 
-TreeNode* process_command(TreeNode* currentFolder, char cmd[3][TOKEN_MAX_LEN], int token_count) {
+TreeNode* process_command(TreeNode* currentFolder, char cmd[3][TOKEN_MAX_LEN],
+                            int token_count) {
     execute_command(cmd[0], cmd[1], cmd[2]);
     if (!strcmp(cmd[0], LS)) {
         ls(currentFolder, cmd[1]);
@@ -29,9 +31,9 @@ TreeNode* process_command(TreeNode* currentFolder, char cmd[3][TOKEN_MAX_LEN], i
     } else if (!strcmp(cmd[0], TREE)) {
         tree(currentFolder, cmd[1]);
     } else if (!strcmp(cmd[0], CD)) {
-        currentFolder = cd(currentFolder, cmd[1]);
+        currentFolder = cd(currentFolder, cmd[1], 1);
     } else if (!strcmp(cmd[0], MKDIR)) {
-        mkdir(currentFolder, strdup(cmd[1]));
+        mkdir(currentFolder, cmd[1]);
     } else if (!strcmp(cmd[0], RMDIR)) {
         rmdir(currentFolder, cmd[1]);
     } else if (!strcmp(cmd[0], RM)) {
@@ -39,11 +41,13 @@ TreeNode* process_command(TreeNode* currentFolder, char cmd[3][TOKEN_MAX_LEN], i
     } else if (!strcmp(cmd[0], RMREC)) {
         rmrec(currentFolder, cmd[1]);
     } else if (!strcmp(cmd[0], TOUCH)) {
-        touch(currentFolder, strdup(cmd[1]), strdup(cmd[2]));
+        touch(currentFolder, cmd[1], cmd[2]);
     } else if (!strcmp(cmd[0], MV)) {
         mv(currentFolder, cmd[1], cmd[2]);
     } else if (!strcmp(cmd[0], CP)) {
         cp(currentFolder, cmd[1], cmd[2]);
+    } else if (!strcmp(cmd[0], "exit")) {
+        return NULL;
     } else {
         printf("UNRECOGNIZED COMMAND!\n");
     }
@@ -52,15 +56,13 @@ TreeNode* process_command(TreeNode* currentFolder, char cmd[3][TOKEN_MAX_LEN], i
 }
 
 int main() {
-    FILE *f = fopen("commands.in", "r");
     char line[LINE_MAX_LEN];
     char cmd[3][TOKEN_MAX_LEN];
     char *token;
-
-    FileTree fileTree = createFileTree(strdup("root"));
+    FileTree fileTree = createFileTree("root");
     TreeNode* currentFolder = fileTree.root;
 
-    while (fgets(line, sizeof(line), f) != NULL) {
+    while (fgets(line, sizeof(line), stdin) != NULL) {
         line[strlen(line)-1] = 0;
 
         cmd[0][0] = cmd[1][0] = cmd[2][0] = 0;
@@ -74,10 +76,10 @@ int main() {
             token = strtok(NULL, " ");
         }
         currentFolder = process_command(currentFolder, cmd, token_idx);
+        if (!currentFolder)
+            break;
     }
 
     freeTree(fileTree);
-
-    fclose(f);
     return 0;
 }
